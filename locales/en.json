@@ -1,0 +1,346 @@
+{
+    "genericErrMsg": {
+        "200": "Success.",
+        "204": "Data Not Found successfully.",
+        "400": "Value in any of the mandatory field's is missing.",
+        "401": "Unauthorised token",
+        "403": "Invalid Call, Access Token is not Expired.",
+        "404": "Data you have requsted is Not Found.",
+        "405": "action not allowed",
+        "406": "Invalid Call, Access Token Expired.",
+        "409": "duplicate",
+        "417": "Invalid Refresh Token Passed.",
+        "440": "Token Expire.",
+        "498": "Invalid Token.",
+        "500": "An unknown error has occurred.",
+        "501": "Implement  error."
+    },
+    "header": {
+        "Authorization": "Authorization token, Ex: Key",
+        "Language": "Language of response, Ex: en"
+    },
+    "settings": {
+        "Post": {
+            "ApiDescription": "This API is use add or update Settings details.",
+            "fieldsDescription": {
+                "metaKey": "Name of the type, Ex: item,faberic",
+                "status": "status of the type Ex : true/false",
+                "metaValue":"select the type",
+                "metaId":"Unique of id of type Ex :834jffiuifbfg748"
+            },
+            "error": {
+                "KeyExists": "This Key Is already Exists"
+            }
+        },
+        "Get": {
+            "ApiDescription": "This API is use to get all or specifice types details.",
+            "fieldsDescription": {
+                "metaKey": "Name of the type, Ex: item,faberic",
+                "status": "status of the type Ex : true/false",
+                "metaValue":"select the type",
+                "page": "Please enetr valid page",
+                "limit": "please enter valid limit",
+                "metaId":"Unique of id of type Ex :834jffiuifbfg748",
+                "createdBy": "User who has created this type",
+                "updatedBy": "User who has updated this type"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "partys": {
+        "Post": {
+            "ApiDescription": "This API is use add or update Settings details.",
+            "fieldsDescription": {
+                "name": "Name of the party, Ex: item,faberic",
+                "status": "status of the party Ex : true/false",
+                "partyId":"Unique of id of party Ex :834jffiuifbfg748"
+            },
+            "error": {
+                "PartyExists": "This party Is already Exists",
+                "ChallanNameExists": "This name Is already Exists",
+                "MaterialExists": "This material Is already Exists",
+                "ItemExists": "This item Is already Exists",
+                "FabricColorExists": "This fabric-color Is already Exists",
+                "FoilColorExists": "This foil-color Is already Exists",
+                "DiamondExists": "This diamond Is already Exists",
+                "EmployeeExists": "This employee Is already Exists",
+                "RemarkExists": "This remark Is already Exists",
+                "DesignCodeExists": "This design-code Is already Exists"
+            }
+        },
+        "Get": {
+            "ApiDescription": "This API is use to get all or specifice types details.",
+            "fieldsDescription": {
+                "name": "Name of the type, Ex: item,faberic",
+                "status": "status of the type Ex : true/false",
+                "page": "Please enetr valid page",
+                "limit": "please enter valid limit",
+                "partyId":"Unique of id of type Ex :834jffiuifbfg748",
+                "createdBy": "User who has created this type",
+                "updatedBy": "User who has updated this type"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "sampleCard": {
+        "Post": {
+            "ApiDescription": "This API is use add or update Settings details.",
+            "fieldsDescription": {
+                "invoice":"invoice of sample card",
+                "cardNo":"card Number of the invoice",
+                "partyId":"Unique of id of party Ex :834jffiuifbfg748",
+                "designNo": "design Number of the sample Card",
+                "challanNo": "challan Number of the sample Card",
+                "TPPM":"total pcs per meter",
+                "needles":"array of needles",
+                "fabricColor":"color of fabeic",
+                "clotheId":"Colthe Id",
+                "CM":"Cut per Meter",
+                "height":"height",
+                "clothes":"array of clothes",
+                "totalProduction":"Total Production",
+                "perDayProduction":"Per dat Production",
+                "totalDays":"Total Days need to complete order",
+                "image":"URL of the Image",
+                "type":"Type of sample_Card",
+                "PM":"Pcs per Meter",
+                "date": "date of the sample Card",
+                "status": "status of the sample card Ex : true/false",
+                "scId":"Unique of id of sample card Ex :834jffiuifbfg748"
+            },
+            "error": {
+                "SampleCardExists": "This invoice and cardNo Is already Exists"
+            }
+        },
+        "Get": {
+            "ApiDescription": "This API is use to get all or specifice types details.",
+            "fieldsDescription": {
+                "invoice":"invoice of sample card",
+                "cardNo":"card Number of the invoice",
+                "partyId":"Unique of id of party Ex :834jffiuifbfg748",
+                "designNo": "design Number of the sample Card",
+                "challanNo": "challan Number of the sample Card",
+                "TPPM":"total pcs per meter",
+                "needles":"array of needles",
+                "fabricColor":"color of fabeic",
+                "clotheId":"Colthe Id",
+                "CM":"Cut per Meter",
+                "height":"height",
+                "clothes":"array of clothes",
+                "totalProduction":"Total Production",
+                "perDayProduction":"Per dat Production",
+                "totalDays":"Total Days need to complete order",
+                "image":"URL of the Image",
+                "type":"Type of sample_Card",
+                "PM":"Pcs per Meter",
+                "date": "date of the sample Card",
+                "status": "status of the sample card Ex : true/false",
+                "scId":"Unique of id of sample card Ex :834jffiuifbfg748",
+                "page": "Please enetr valid page",
+                "limit": "please enter valid limit",
+                "createdBy": "User who has created this type",
+                "updatedBy": "User who has updated this type"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "matchingCard": {
+        "Post": {
+            "ApiDescription": "This API is use add or update Settings details.",
+            "fieldsDescription": {
+                "invoice":"invoice of sample card",
+                "cardNo":"card Number of the invoice",
+                "partyId":"Unique of id of party Ex :834jffiuifbfg748",
+                "designNo": "design Number of the sample Card",
+                "challanNo": "challan Number of the sample Card",
+                "TPPM":"total pcs per meter",
+                "needles":"array of needles",
+                "fabricColor":"color of fabeic",
+                "clotheId":"Colthe Id",
+                "CM":"Cut per Meter",
+                "height":"height",
+                "clothes":"array of clothes",
+                "totalProduction":"Total Production",
+                "perDayProduction":"Per dat Production",
+                "totalDays":"Total Days need to complete order",
+                "foil":"Foil of the matching",
+                "handWork":"hand Work for the matching",
+                "stitching":"sititching for the stitching",
+                "billNo":"bill No for the matchingCard",
+                "image":"URL of the Image",
+                "type":"Type of sample_Card",
+                "PM":"Pcs per Meter",
+                "date": "date of the sample Card",
+                "status": "status of the sample card Ex : true/false",
+                "mcId":"Unique of id of sample card Ex :834jffiuifbfg748"
+            },
+            "error": {
+                "MatchingCardExists": "This cardNo Is already Exists",
+                "DressRateCardExists": "This cardNo Is already Exists",
+                "SareeRateCardExists": "This cardNo Is already Exists",
+                "LumpRateCardExists": "This cardNo Is already Exists",
+                "ReportExists": "This report Is already Exists"
+            }
+        },
+        "Get": {
+            "ApiDescription": "This API is use to get all or specifice types details.",
+            "fieldsDescription": {
+                "invoice":"invoice of sample card",
+                "cardNo":"card Number of the invoice",
+                "partyId":"Unique of id of party Ex :834jffiuifbfg748",
+                "designNo": "design Number of the sample Card",
+                "challanNo": "challan Number of the sample Card",
+                "TPPM":"total pcs per meter",
+                "needles":"array of needles",
+                "fabricColor":"color of fabeic",
+                "clotheId":"Colthe Id",
+                "CM":"Cut per Meter",
+                "height":"height",
+                "clothes":"array of clothes",
+                "totalProduction":"Total Production",
+                "perDayProduction":"Per dat Production",
+                "totalDays":"Total Days need to complete order",
+                "foil":"Foil of the matching",
+                "handWork":"hand Work for the matching",
+                "stitching":"sititching for the stitching",
+                "billNo":"bill No for the matchingCard",
+                "image":"URL of the Image",
+                "type":"Type of sample_Card",
+                "PM":"Pcs per Meter",
+                "date": "date of the sample Card",
+                "status": "status of the sample card Ex : true/false",
+                "mcId":"Unique of id of sample card Ex :834jffiuifbfg748",
+                "page": "Please enetr valid page",
+                "limit": "please enter valid limit",
+                "createdBy": "User who has created this type",
+                "updatedBy": "User who has updated this type"
+            },
+            "error": {
+                "MatchingCardExists": "This invoice and cardNo Is already Exists"
+            }
+        }
+    },
+    "clothes": {
+        "Post": {
+            "ApiDescription": "This API is use add or update Settings details.",
+            "fieldsDescription": {
+                "name": "Name of the party, Ex: item,faberic",
+                "status": "status of the party Ex : true/false",
+                "clotheId":"Unique of id of party Ex :834jffiuifbfg748"
+            },
+            "error": {
+                "ClotheExists": "This clothe Is already Exists",
+                "ClothePartyExists": "This clothe party Is already Exists"
+            }
+        },
+        "Get": {
+            "ApiDescription": "This API is use to get all or specifice types details.",
+            "fieldsDescription": {
+                "name": "Name of the type, Ex: item,faberic",
+                "status": "status of the type Ex : true/false",
+                "page": "Please enetr valid page",
+                "limit": "please enter valid limit",
+                "clotheId":"Unique of id of type Ex :834jffiuifbfg748",
+                "createdBy": "User who has created this type",
+                "updatedBy": "User who has updated this type"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "activityLog": {
+        "Get": {
+            "ApiDescription": "This API is use to get all or specifice types details.",
+            "fieldsDescription": {
+                "description": "description of log",
+                "type":"select the type",
+                "status": "status of the type Ex : In/Out",
+                "itemId":"Unique of id of item Ex :834jffiuifbfg748",
+                "createId":"Unique of id of createId Ex :834jffiuifbfg748",
+                "fromDate":"from date",
+                "page": "Please enetr valid page",
+                "limit": "please enter valid limit",
+                "toDate":"to date",
+                "activityLogId":"Unique of id of activityLog Ex :834jffiuifbfg748"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "auth": {
+        "Post": {
+            "ApiDescription": "This API is use for signIn admin-user into system.",
+            "fieldsDescription": {
+                "phoneNumber": "Your phoneNumber for contact, Ex: 1234567890",
+                "type":"User Type Ex:delivery,admin,user"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "users": {
+        "Post": {
+            "ApiDescription": "This API is use for find or check user is already exists or not.",
+            "fieldsDescription": {
+                "phoneNumber": "Your phoneNumber for contact, Ex: 1234567890",
+                "email": "Your email, Ex: abc@gmail.com",
+                "name" : "Your Name, Ex: Xyz",
+                "type":"User Type Ex:delivery,superadmin",
+                "role":"User Role Ex:admin,superadmin,master,cutter",
+                "image" :"URL of User Profile Ex :image.png",
+                "status" : "status of user Ex : true/false",
+                "gender":"gender of the user",
+                "password":"password of the user",
+                "isActive":"status of the user ", 
+                "userId" : "Unique of id of user Ex :834jffiuifbfg748",
+                "permissions" : "Array of user Permissions Ex :[{ addproduct:true,updateitem:false }]"
+            },
+            "error": {
+                "required": "required field is missing",
+                "emailExists": "This Email Address Is already Exists",
+                "isfalse":"user is currently unavailable"
+            }
+        },
+        "Get": {
+            "ApiDescription": "This API is use for find or get user.",
+            "fieldsDescription": {
+                "phoneNumber": "Your phoneNumber for contact, Ex: 1234567890",
+                "email": "Your email, Ex: abc@gmail.com",
+                "name" : "Your Name, Ex: Xyz",
+                "type":"User Type Ex:delivery,superadmin",
+                "role":"User Role Ex:admin,superadmin,master,cutter",
+                "status" : "status of user Ex : true/false",
+                "page": "Please enetr valid page",
+                "gender":"gender of the user",
+                "isActive":"status of the user ", 
+                "limit": "please enter valid limit",
+                "userId" : "Unique of id of user Ex :834jffiuifbfg748",
+                "permissions" : "Array of user Permissions Ex :[{ addproduct:true,updateitem:false }]"
+            },
+            "error": {
+
+            }
+        }
+    },
+    "signIn": {
+        "Post": {
+            "ApiDescription": "This API is use for signIn user into system.",
+            "fieldsDescription": {
+                "email" : "email address of user Ex :abc@gmail.com",
+                "password": "password of the user"
+            },
+            "error": {
+                "passwordInvalid":"Invalid Password"
+            }
+        }
+    }
+}
