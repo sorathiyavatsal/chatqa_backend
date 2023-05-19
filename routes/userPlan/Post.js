@@ -4,17 +4,14 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const userCollection = require("../../models/users")
-const config = require('../../config')
+const userPlanCollection = require("../../models/userPlan")
 const moment = require('moment');
 const { ObjectId } = require('mongodb');
 const activityLogCollection = require('../../models/activitylogs');
 const GetRequestedUser = require('../../library/helper/GetRequestedUser');
-const duplicatEmail = require('./CheckEmailExists')
-const bcrypt = require('bcryptjs');
+const duplicatUserPlan = require('./CheckUserPlanExists')
 const PostPatchPayload = require('../../library/helper/PostPatchPayload');
-const clientDB = require("../../models/mongodb");
-const SendUserVerifycationEmail = require('./SendUserVerifycationEmail');
+const clientDB = require("../../models/mongodb")
 /**
  * @description for user signIn
  * @property {string} authorization - authorization
@@ -28,14 +25,14 @@ const SendUserVerifycationEmail = require('./SendUserVerifycationEmail');
  */
 
 const validator = Joi.object({
-    name: Joi.string().required().description(locals['users'].Post.fieldsDescription.name),
-    password: Joi.string().required().description(locals['users'].Post.fieldsDescription.password),
-    email: Joi.string().required().description(locals['users'].Post.fieldsDescription.email),
-    url: Joi.string().description(locals['signIn'].Post.fieldsDescription.email),
-    points:Joi.number().default(0).min(0).description(locals['users'].Post.fieldsDescription.isActive),
-    isSubscribe:Joi.boolean().default(false).description(locals['users'].Post.fieldsDescription.isActive),
-    active: Joi.boolean().default(true).description(locals['users'].Post.fieldsDescription.type),
-    role: Joi.string().default('user').description(locals['users'].Post.fieldsDescription.role).valid('superadmin','admin', 'user')
+    userId:Joi.string().required().description(locals['users'].Post.fieldsDescription.name),
+    planId:Joi.string().required().description(locals['users'].Post.fieldsDescription.name),
+    translationId:Joi.string().required().description(locals['users'].Post.fieldsDescription.name),
+    totalPoints: Joi.number().min(0).required().description(locals['users'].Post.fieldsDescription.name),
+    points:Joi.number().default(0).description(locals['users'].Post.fieldsDescription.isActive),
+    day: Joi.number().min(0).required().description(locals['signIn'].Post.fieldsDescription.email),
+    endDate:Joi.string().description(locals['users'].Post.fieldsDescription.type),
+    isActive: Joi.boolean().default(true).description(locals['users'].Post.fieldsDescription.type)
 }).unknown(false);
 
 const handler = async (req, res) => {
@@ -49,41 +46,30 @@ const handler = async (req, res) => {
     };
     let code;
     const response = {}
-    let payload = req.payload, userNumber, user,userResult;
     try {
         await dbSession.withTransaction(async () => {
             const AuthUser = await GetRequestedUser.User(req.headers.authorization);
-            
-            if (await duplicatEmail.IsExists(payload.email)) {
+            let payload = req.payload
+            if (await duplicatUserPlan.IsExists(payload.userId)) {
                 code = 409;
-                response.message = locals['users'].Post.error.EmailExists;
+                response.message = "This User plan Is already exits";
                 return;
             }
-            do {
-                userNumber = String(Math.floor(Math.random() * 1000)).concat('-', String(Math.floor(Math.random() * 1000)).concat('-', String(Math.floor(Math.random() * 1000))));
-                user = userCollection.Select({ userNumber: userNumber })
-            } while (user.length || userNumber.length != 11)
             payload = await PostPatchPayload.ObjectPayload(req, 'post');
-            payload.password = bcrypt.hashSync(payload.password, 10);
-            payload["userNumber"] = userNumber;
-            payload["ban"] = false;
-            userResult = await userCollection.Insert(payload, dbSession);
+            payload["endDate"]=payload.endDate?payload.endDate:moment().add(payload.day+1, 'days').format('DD/MM/YYYY');
+            const userPlanResult = await userPlanCollection.Insert(payload, dbSession);
             let logs = {};
-            logs['description'] = `user ${payload.name} is register `;
-            logs['type'] = "USER"
+            logs['description'] = `User Plan ${AuthUser?.metaData?.name} is added`;
+            logs['type'] = "USER_PLAN"
             logs['status'] = true;
-            logs['itemId'] = ObjectId("" + userResult.insertedIds[0]);
+            logs['itemId'] = ObjectId("" + userPlanResult.insertedIds[0]);
             logs['createdBy'] = AuthUser?.userId ? ObjectId(AuthUser.userId) : "",
             logs['createAt'] = moment().format();
             await activityLogCollection.Insert(logs, dbSession);
             code = 200;
             response.message = locals["genericErrMsg"]["200"];
-            response.data = userResult;
+            response.data =userPlanResult
         }, transactionOptions);
-        if (userResult?.insertedIds[0]) {
-            let user = await userCollection.SelectOne({ _id: ObjectId(userResult.insertedIds[0]) });
-            //await SendUserVerifycationEmail.sendmail(user, req.payload.url);
-        }
         return res.response(response).code(code);
     } catch (e) {
         console.log(e)

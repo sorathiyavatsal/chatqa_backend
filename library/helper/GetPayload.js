@@ -24,11 +24,16 @@ const ObjectPayload = async (Payload, type, sortBy = '_id', DESC = true) => {
           delete Payload["userId"];
         }
         break;
-      case "customer":
-      case "company":
-        if (Payload["cId"]) {
-          Payload["_id"] = ObjectId(Payload["cId"]);
-          delete Payload["cId"];
+      case "subscriptionPlan":
+        if (Payload["spId"]) {
+          Payload["_id"] = ObjectId(Payload["spId"]);
+          delete Payload["spId"];
+        }
+        break;
+      case "userPlan":
+        if (Payload["upId"]) {
+          Payload["_id"] = ObjectId(Payload["upId"]);
+          delete Payload["upId"];
         }
         break;
     }

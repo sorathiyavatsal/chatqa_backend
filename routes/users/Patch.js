@@ -29,7 +29,7 @@ const validator = Joi.object({
     name: Joi.string().description(locals['users'].Post.fieldsDescription.name),
     password: Joi.string().description(locals['users'].Post.fieldsDescription.password),
     email: Joi.string().description(locals['users'].Post.fieldsDescription.email),
-    points:Joi.number().description(locals['users'].Post.fieldsDescription.isActive),
+    points:Joi.number().min(0).description(locals['users'].Post.fieldsDescription.isActive),
     isSubscribe:Joi.boolean().description(locals['users'].Post.fieldsDescription.isActive),
     status: Joi.boolean().description(locals['users'].Post.fieldsDescription.status),
     ban: Joi.boolean().description(locals['users'].Post.fieldsDescription.status),
