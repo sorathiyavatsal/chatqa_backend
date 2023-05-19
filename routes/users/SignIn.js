@@ -5,7 +5,7 @@ let ObjectId = require('mongodb').ObjectId;
 const logger = require('winston');
 const locals = require('../../locales');
 const { generateTokens } = require('../../middleware/auth');
-const userCollection = require('../../models/users')
+const userCollection = require('../../models/users');
 const refreshToken = require('../../models/refreshToken');
 const clientDB = require("../../models/mongodb")
 const bcrypt = require('bcryptjs');
@@ -25,7 +25,7 @@ const moment = require("moment");
 
 const validator = Joi.object({
     email: Joi.string().required().description(locals['signIn'].Post.fieldsDescription.email),
-    password: Joi.string().required().description(locals['signIn'].Post.fieldsDescription.password)
+    password: Joi.string().required().description(locals['signIn'].Post.fieldsDescription.email)
 }).unknown(false);
 
 const handler = async (req, res) => {
@@ -36,7 +36,7 @@ const handler = async (req, res) => {
         readConcern: { level: 'local' },
         writeConcern: { w: 'majority' }
     };
-    var code;
+    let code;
     const response = {}
     try {
         await dbSession.withTransaction(async () => {
@@ -45,10 +45,14 @@ const handler = async (req, res) => {
                 status: true
             })
             if (userDetails) {
-                const verificationResult = userDetails?.isActive?true:false
+                const verificationResult = userDetails?.ban?false:true
                 if (verificationResult && bcrypt.compareSync(req.payload.password, userDetails.password)) {
+                    if(!userDetails?.active){
+                        code = 409
+                        response.message = "Please verify your email address"; 
+                        return
+                    }
                     let refreshtokenResult, refreshtoken;
-
                     await refreshToken.Delete({ userId: ObjectId(userDetails._id) });
                     do {
                         refreshtoken = randToken.uid(256);
@@ -58,8 +62,24 @@ const handler = async (req, res) => {
                     userDetails['access_token'] = "Bearer " + await generateTokens({
                         userId: "" + userDetails._id,
                         userRole: userDetails.role,
-                        metaData: userDetails
+                        metaData: {
+                            name:userDetails?.name,
+                            email:userDetails?.email,
+                            role:userDetails?.role,
+                            userNumber:userDetails?.userNumber
+
+                        }
                     })
+                    delete userDetails.email;
+                    delete userDetails.password;
+                    delete userDetails.url;
+                    delete userDetails.role;
+                    delete userDetails.gender;
+                    delete userDetails.status;
+                    delete userDetails.createdBy;
+                    delete userDetails.createAt;
+                    delete userDetails.active;
+                    delete userDetails.ban;
                     code = 200
                     await refreshToken.Insert({ refreshtoken: refreshtoken,userId:ObjectId(userDetails._id), 'createAt': moment().format()},dbSession);
                     response.message = locals["genericErrMsg"]["200"]
@@ -68,17 +88,17 @@ const handler = async (req, res) => {
                 } else { 
                     if(verificationResult)
                     {      
-                        code = 409
-                        response.message = locals['signIn'].Post.error.passwordInvalid;
-                        }
-                        else{
-                        code = 405
-                        response.message = locals['users'].Post.error.isfalse;
-                        }
+                    code = 405
+                    response.message = locals['signIn'].Post.error.passwordInvalid;
+                    }
+                    else{
+                    code = 405
+                    response.message = locals['users'].Post.error.isfalse; 
+                    }
                 }
             } else {
                 code = 404
-                response.message = "user not found"
+                response.message = "User not found"
                 //return res.response({ message: 'user not found' }).code(204);
             }
         }, transactionOptions);

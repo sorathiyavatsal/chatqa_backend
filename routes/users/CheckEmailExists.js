@@ -3,7 +3,7 @@ const IsExists = async(email)=>
 {
     let duplicatUser = await userCollection.Aggregate([ 
         {
-            $match: { email: { $regex: '^'+email+'$', $options: 'i' } }
+            $match: { email: { $regex: email, $options: 'i' } }
         },
         {
             $match: { status:true }

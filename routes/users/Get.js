@@ -24,15 +24,15 @@ const { auth } = require('../../config/components/server');
 
 const validator = Joi.object({
     name: Joi.string().description(locals['users'].Get.fieldsDescription.name),
-    phoneNumber: Joi.string().description(locals['users'].Get.fieldsDescription.phoneNumber),
     email: Joi.string().description(locals['users'].Get.fieldsDescription.email),
     page: Joi.number().description(locals['users'].Get.fieldsDescription.page),
     limit: Joi.number().description(locals['users'].Get.fieldsDescription.limit),
-    isActive:Joi.boolean().description(locals['users'].Post.fieldsDescription.isActive),
-    role: Joi.string().description(locals['users'].Post.fieldsDescription.role),
-    status: Joi.boolean().default(true).description(locals['users'].Get.fieldsDescription.status),
+    points:Joi.number().description(locals['users'].Post.fieldsDescription.isActive),
+    isSubscribe:Joi.boolean().description(locals['users'].Post.fieldsDescription.isActive),
+    role: Joi.string().description(locals['users'].Get.fieldsDescription.role),
+    status: Joi.boolean().description(locals['users'].Get.fieldsDescription.status),
     userId: Joi.string().description(locals['users'].Get.fieldsDescription.userId)
-}).unknown(false);
+}).unknown();
 
 const handler = async (req, res) => {
     try {
@@ -45,10 +45,10 @@ const handler = async (req, res) => {
 
         const condition = []
 
-        if (payload.isActive==true||payload.isActive==false) {
+        if (payload.type) {
             condition.push({
                 $match: {
-                    isActive: payload.isActive
+                    type: { $in: payload.type.split(",") }
                 }
             })
         }
@@ -66,12 +66,6 @@ const handler = async (req, res) => {
                     name: payload.name
                 }
             })
-        } if (payload.phoneNumber) {
-            condition.push({
-                $match: {
-                    phoneNumber: payload.phoneNumber
-                }
-            })
         } if (payload.status == true || payload.status == false) {
             condition.push({
                 $match: {
@@ -85,21 +79,12 @@ const handler = async (req, res) => {
                     _id: ObjectId(payload.userId)
                 }
             })
-        } 
-        else 
-        {
-            condition.push(
-                {
+        } else {
+            condition.push({
                 $match: {
                     _id: { $not: { $in: [ObjectId(user.userId)] } }
                 }
-            },
-            {
-                $match: {
-                    email: { $not: { $in: ["boradajarun7575@gmail.com"] } }
-                }
-            }
-            )
+            })
         }
 
         condition.push(
@@ -110,7 +95,7 @@ const handler = async (req, res) => {
             },
             {
                 $group: {
-                    _id: 0,
+                    _id: null,
                     count: { $sum: 1 },
                     users: { $push: '$$ROOT' },
                 }
@@ -121,16 +106,18 @@ const handler = async (req, res) => {
                 users: { $slice: ['$users', start, limit] },
             },
         })
-        console.log(condition)
+
         const users = await usersCollection.Aggregate(condition);
-        if (!users || !users[0]?.users?.length) {
+        console.log(users)
+        // const users = await usersCollection.Aggregate(await GetPayload.ObjectPayload(req.query,"user"));
+        if (!users || !users[0].users.length) {
             return res.response({
                 message: "user not found"
             }).code(204);
         }
         return res.response({
             message: locals["genericErrMsg"]["200"],
-            data: users[0]
+            data: users
         }).code(200);
     } catch (e) {
         console.log(e)

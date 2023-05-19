@@ -5,9 +5,8 @@ const logger = require('winston');
 const locals = require('../../locales');
 const usersCollection = require("../../models/users")
 let ObjectId = require('mongodb').ObjectId;
-const duplicatEmail = require('./CheckEmailAddressExists')
+const duplicatEmail = require('./CheckEmailExists')
 const PostPatchPayload = require('../../library/helper/PostPatchPayload');
-const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const clientDB = require("../../models/mongodb")
 /**
@@ -24,15 +23,16 @@ const clientDB = require("../../models/mongodb")
 
 const queryvalidator = Joi.object({
     userId: Joi.string().required().description(locals['users'].Post.fieldsDescription.userId)
-}).unknown(false);
+}).unknown();
 
 const validator = Joi.object({
     name: Joi.string().description(locals['users'].Post.fieldsDescription.name),
-    email: Joi.string().description(locals['users'].Post.fieldsDescription.email),
     password: Joi.string().description(locals['users'].Post.fieldsDescription.password),
-    isActive:Joi.boolean().default(true).description(locals['users'].Post.fieldsDescription.isActive),
-    role: Joi.string().description(locals['users'].Post.fieldsDescription.role).valid('admin','superadmin','user'),
-    status: Joi.boolean().description(locals['users'].Post.fieldsDescription.status)
+    email: Joi.string().description(locals['users'].Post.fieldsDescription.email),
+    points:Joi.number().description(locals['users'].Post.fieldsDescription.isActive),
+    isSubscribe:Joi.boolean().description(locals['users'].Post.fieldsDescription.isActive),
+    status: Joi.boolean().description(locals['users'].Post.fieldsDescription.status),
+    ban: Joi.boolean().description(locals['users'].Post.fieldsDescription.status),
 }).unknown(false);
 
 const handler = async (req, res) => {
@@ -44,29 +44,28 @@ const handler = async (req, res) => {
         readConcern: { level: 'local' },
         writeConcern: { w: 'majority' }
     };
-    var code;
+    let code;
     const response = {}
     try {
         await dbSession.withTransaction(async () => {
             let payload = req.payload;
+
             const getUser = await usersCollection.SelectOne({
                 _id: ObjectId(req.query.userId)
             });
-            
+
             let body = {}
-            if (getUser.email != payload.email && payload.email!=null) {
-                
+            if (payload.email!="" && getUser.email != payload.email) {
                 if (await duplicatEmail.IsExists(payload.email)) {
                     code = 409;
-                    response.message = locals['users'].Post.error.PhoneNumberExists;
+                    response.message = locals['users'].Post.error.EmailExists;
                     return;
+                }
+                else{
+                    body["active"]=false;
                 }
             }
             body = await PostPatchPayload.ObjectPayload(req, 'patch');
-            if(payload.password!=null&& !bcrypt.compareSync(getUser.password,payload.password))
-            {
-                body.password=bcrypt.hashSync(payload.password, 10);
-            }
             const user = await usersCollection.Update({
                 _id: ObjectId(req.query.userId)
             }, body, dbSession);
@@ -76,6 +75,7 @@ const handler = async (req, res) => {
         }, transactionOptions);
         return res.response(response).code(code);
     } catch (e) {
+        console.log(e)
         logger.error(e.message)
         return res.response({
             message: locals["genericErrMsg"]["500"]

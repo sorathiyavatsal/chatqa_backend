@@ -3,18 +3,21 @@ const locals = require('../../locales')
 const PostAPI = require('./Post')
 const PatchAPI = require('./Patch')
 const GetAPI = require('./Get')
-const SignInAPI = require('./SignIn')
+const SendUserEmailAPI = require('./SendUserEmail')
+const VerifyEmailAPI = require('./VerifyEmailUser')
+const ForgotPasswordAPI = require('./forgotPassword');
+const SignInAPI = require('./SignIn');
 module.exports = [
     {
         method: 'post',
-        path: '/register',
+        path: '/signup',
         handler: PostAPI.handler,
         config: {
             cors: true,
             description: locals["users"].Post.ApiDescription,
-            tags: ['api', 'users'],
+            tags: ['api', 'auth'],
             auth: {
-                strategies: ['basic','superadmin', 'admin','user']
+                strategies: ['basic', 'user','admin']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -33,9 +36,9 @@ module.exports = [
         config: {
             cors: true,
             description: locals["users"].Get.ApiDescription,
-            tags: ['api', 'users'],
+            tags: ['api', 'user'],
             auth: {
-                strategies: ['basic','superadmin', 'admin','user']
+                strategies: ['basic', 'user', 'admin']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -56,7 +59,7 @@ module.exports = [
             description: locals["users"].Post.ApiDescription,
             tags: ['api', 'users'],
             auth: {
-                strategies: ['basic','superadmin', 'admin','user']
+                strategies: ['basic','user', 'admin']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -70,12 +73,75 @@ module.exports = [
     },
     {
         method: 'post',
-        path: '/user/login',
+        path: '/senduseremail',
+        handler: SendUserEmailAPI.handler,
+        config: {
+            cors: true,
+            description: locals["signIn"].Post.ApiDescription,
+            tags: ['api', 'auth'],
+            auth: {
+                strategies: ["basic"]
+            },
+            validate: {
+                headers: headerValidator.headerAuth,
+                payload: SendUserEmailAPI.validator,
+                failAction: (req, reply, source, error) => {
+                    headerValidator.faildAction(req, reply, source, error)
+                }
+            },
+            response: SendUserEmailAPI.response
+        }
+    },
+    {
+        method: 'patch',
+        path: '/forgotPassword',
+        handler: ForgotPasswordAPI.handler,
+        config: {
+            cors: true,
+            description: locals["signIn"].Post.ApiDescription,
+            tags: ['api', 'auth'],
+            auth: {
+                strategies: ['basic']
+            },
+            validate: {
+                headers: headerValidator.headerAuth,
+                payload: ForgotPasswordAPI.validator,
+                failAction: (req, reply, source, error) => {
+                    headerValidator.faildAction(req, reply, source, error)
+                }
+            },
+           // response: ForgotPasswordAPI.response
+        }
+    },
+    {
+        method: 'patch',
+        path: '/verifyemail',
+        handler: VerifyEmailAPI.handler,
+        config: {
+            cors: true,
+            description: locals["signIn"].Post.ApiDescription,
+            tags: ['api','auth'],
+            auth: {
+                strategies: ['basic']
+            },
+            validate: {
+                headers: headerValidator.headerAuth,
+                payload: VerifyEmailAPI.validator,
+                failAction: (req, reply, source, error) => {
+                    headerValidator.faildAction(req, reply, source, error)
+                }
+            },
+            response: VerifyEmailAPI.response
+        }
+    },
+    {
+        method: 'post',
+        path: '/login',
         handler: SignInAPI.handler,
         config: {
             cors: true,
             description: locals["users"].Post.ApiDescription,
-            tags: ['api', 'users'],
+            tags: ['api', 'auth'],
             auth: {
                 strategies: ['basic']
             },
@@ -86,7 +152,7 @@ module.exports = [
                     headerValidator.faildAction(req, reply, source, error)
                 }
             },
-            //response: SignInAPI.response
+            response: SignInAPI.response
         }
     }
 ]

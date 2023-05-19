@@ -26,11 +26,11 @@ const ObjectPayload = async (req, type) => {
     switch (type) {
       case "post":
         Payload["status"] = true;
-        Payload["createdBy"] = ObjectId(user.userId);
+        Payload["createdBy"] =user?.userId?ObjectId(user.userId):"";
         Payload["createAt"] = moment().format();
         break;
       case "patch":
-        Payload["updatedBy"] = ObjectId(user.userId);
+        Payload["updatedBy"] = user?.userId?ObjectId(user.userId):"";
         Payload["updateAt"] = moment().format();
         break;
     }
