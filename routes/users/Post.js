@@ -34,7 +34,7 @@ const validator = Joi.object({
     url: Joi.string().description(locals['signIn'].Post.fieldsDescription.email),
     points:Joi.number().default(0).description(locals['users'].Post.fieldsDescription.isActive),
     isSubscribe:Joi.boolean().default(false).description(locals['users'].Post.fieldsDescription.isActive),
-    active: Joi.boolean().default(false).description(locals['users'].Post.fieldsDescription.type),
+    active: Joi.boolean().default(true).description(locals['users'].Post.fieldsDescription.type),
     role: Joi.string().default('user').description(locals['users'].Post.fieldsDescription.role).valid('superadmin','admin', 'user')
 }).unknown(false);
 
@@ -74,15 +74,15 @@ const handler = async (req, res) => {
             logs['status'] = true;
             logs['itemId'] = ObjectId("" + userResult.insertedIds[0]);
             logs['createdBy'] = AuthUser?.userId ? ObjectId(AuthUser.userId) : "",
-                logs['createAt'] = moment().format();
-            const logsResult = await activityLogCollection.Insert(logs, dbSession);
+            logs['createAt'] = moment().format();
+            await activityLogCollection.Insert(logs, dbSession);
             code = 200;
             response.message = locals["genericErrMsg"]["200"];
             response.data = userResult;
         }, transactionOptions);
         if (userResult?.insertedIds[0]) {
             let user = await userCollection.SelectOne({ _id: ObjectId(userResult.insertedIds[0]) });
-            await SendUserVerifycationEmail.sendmail(user, req.payload.url);
+            //await SendUserVerifycationEmail.sendmail(user, req.payload.url);
         }
         return res.response(response).code(code);
     } catch (e) {
@@ -91,7 +91,6 @@ const handler = async (req, res) => {
         return res.response({ message: locals["genericErrMsg"]["500"] }).code(500);
     }
     finally {
-        ''
         await dbSession.endSession();
     }
 }
