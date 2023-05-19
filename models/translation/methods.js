@@ -5,7 +5,7 @@ const ObjectID = require('mongodb').ObjectID
 const Promise = require("bluebird");
 const mongo = Promise.promisifyAll(require('../mongodb'))
 
-const tablename = 'customer'
+const tablename = 'translation'
 
 const Select = async (data, sortBy = {}, porject = {}, skip = 0, limit = 20) => {
     const db = await mongo.get();

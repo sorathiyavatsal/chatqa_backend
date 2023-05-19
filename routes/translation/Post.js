@@ -4,12 +4,12 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const companyCollection = require("../../models/company")
+const customerCollection = require("../../models/translation")
 const moment = require('moment');
 const { ObjectId } = require('mongodb');
 const activityLogCollection = require('../../models/activitylogs');
 const GetRequestedUser = require('../../library/helper/GetRequestedUser');
-const duplicatCompany = require('./CheckCompanyExists')
+const duplicatCustomer = require('./CheckCustomerExists')
 const PostPatchPayload = require('../../library/helper/PostPatchPayload');
 const clientDB = require("../../models/mongodb")
 /**
@@ -25,35 +25,7 @@ const clientDB = require("../../models/mongodb")
  */
 
 const validator = Joi.object({
-        type: Joi.string().description(locals['sampleCard'].Post.fieldsDescription.type),
-        name: Joi.object().keys({
-            english: Joi.string().required(),
-            arabic: Joi.string().allow("").allow(null),
-            city:Joi.string().allow("").allow(null),
-            street:Joi.string().allow("").allow(null),
-            postal:Joi.string().allow("").allow(null)
-        }).unknown(false),
-        email: Joi.string().required().description(locals['sampleCard'].Post.fieldsDescription.perDayProduction),
-        fax: Joi.string().allow("").allow(null).description(locals['sampleCard'].Post.fieldsDescription.perDayProduction),
-        website: Joi.string().allow("").allow(null).description(locals['sampleCard'].Post.fieldsDescription.perDayProduction),
-        divison: Joi.string().description(locals['sampleCard'].Post.fieldsDescription.perDayProduction).label("City/Sub Division Arabic"),
-        CSE: Joi.string().description(locals['sampleCard'].Post.fieldsDescription.perDayProduction),
-        countryCode: Joi.number().allow("").allow(null).description(locals['sampleCard'].Post.fieldsDescription.perDayProduction),
-        country: Joi.string().allow("").allow(null).description(locals['sampleCard'].Post.fieldsDescription.perDayProduction),
-        number: Joi.object().keys({
-            phone: Joi.string().allow("").allow(null),
-            building: Joi.number().allow("").allow(null),
-            Id: Joi.number().allow("").allow(null),
-            PI: Joi.number().allow("").allow(null),
-            vat: Joi.string().allow("").allow(null)
-        }).unknown(false),
-        banking: Joi.object().keys({
-            name: Joi.string(),
-            branch: Joi.string().allow("").allow(null),
-            account:Joi.string().allow("").allow(null),
-            number:Joi.number().allow("").allow(null),
-            IBAN:Joi.string().allow("").allow(null)
-        }).unknown(false)
+    
 }).unknown(false);
 
 const handler = async (req, res) => {
@@ -71,24 +43,24 @@ const handler = async (req, res) => {
         await dbSession.withTransaction(async () => {
             const AuthUser = await GetRequestedUser.User(req.headers.authorization);
             let payload = req.payload
-            if (payload.email!=null && await duplicatCompany.IsExists(payload?.email)) {
+            if (payload.other?.email!=null && await duplicatCustomer.IsExists(payload.other?.email)) {
                 code = 409;
                 response.message = "This email Is already Exists";
                 return;
             }
             payload = await PostPatchPayload.ObjectPayload(req, 'post');
-            const companyResult = await companyCollection.Insert(payload, dbSession);
+            const customerResult = await customerCollection.Insert(payload, dbSession);
             let logs = {};
-            logs['description'] = `company ${payload.other?.email} is added`;
-            logs['type'] = "Company"
+            logs['description'] = `Customer ${payload.other?.email} is added`;
+            logs['type'] = "CUSTOMER"
             logs['status'] = true;
-            logs['itemId'] = ObjectId("" + companyResult.insertedIds[0]);
+            logs['itemId'] = ObjectId("" + customerResult.insertedIds[0]);
             logs['createdBy'] = AuthUser?.userId ? ObjectId(AuthUser.userId) : "",
                 logs['createAt'] = moment().format();
             await activityLogCollection.Insert(logs, dbSession);
             code = 200;
             response.message = locals["genericErrMsg"]["200"];
-            response.data = companyResult;
+            response.data = customerResult;
         }, transactionOptions);
         return res.response(response).code(code);
     } catch (e) {
