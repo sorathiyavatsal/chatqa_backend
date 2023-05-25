@@ -70,14 +70,12 @@ const handler = async (req, res) => {
 
                         }
                     })
-                    delete userDetails.email;
                     delete userDetails.password;
                     delete userDetails.url;
                     delete userDetails.role;
                     delete userDetails.gender;
                     delete userDetails.status;
                     delete userDetails.createdBy;
-                    delete userDetails.createAt;
                     delete userDetails.active;
                     delete userDetails.ban;
                     code = 200
