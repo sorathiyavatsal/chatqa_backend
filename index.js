@@ -7,7 +7,10 @@ const path = require("path");
 const middleware = require('./middleware');
 const db = require('./models/mongodb');
 
-const Server = Hapi.Server();
+const Server = Hapi.Server({
+    host: config.server.host,
+    port: config.server.port
+});
 Server.realm.modifiers.route.prefix = "/v1";
 
 const initialize = async () => {
