@@ -4,12 +4,9 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const customerCollection = require("../../models/translation")
-const moment = require('moment');
-const { ObjectId } = require('mongodb');
-const activityLogCollection = require('../../models/activitylogs');
-const GetRequestedUser = require('../../library/helper/GetRequestedUser');
+const questionAnswerCollection = require("../../models/questionAnswer")
 const duplicatCustomer = require('./CheckCustomerExists')
+const OpenAI = require('../../config/components/OpenAI')
 const PostPatchPayload = require('../../library/helper/PostPatchPayload');
 const clientDB = require("../../models/mongodb")
 /**
@@ -25,7 +22,7 @@ const clientDB = require("../../models/mongodb")
  */
 
 const validator = Joi.object({
-    
+    data:Joi.object().required().description(locals['sampleCard'].Post.fieldsDescription.scId)
 }).unknown(false);
 
 const handler = async (req, res) => {
@@ -41,26 +38,20 @@ const handler = async (req, res) => {
     const response = {}
     try {
         await dbSession.withTransaction(async () => {
-            const AuthUser = await GetRequestedUser.User(req.headers.authorization);
             let payload = req.payload
             if (payload.other?.email!=null && await duplicatCustomer.IsExists(payload.other?.email)) {
                 code = 409;
                 response.message = "This email Is already Exists";
                 return;
             }
+            const answer = await OpenAI.createCompletion(payload.data);
             payload = await PostPatchPayload.ObjectPayload(req, 'post');
-            const customerResult = await customerCollection.Insert(payload, dbSession);
-            let logs = {};
-            logs['description'] = `Customer ${payload.other?.email} is added`;
-            logs['type'] = "CUSTOMER"
-            logs['status'] = true;
-            logs['itemId'] = ObjectId("" + customerResult.insertedIds[0]);
-            logs['createdBy'] = AuthUser?.userId ? ObjectId(AuthUser.userId) : "",
-                logs['createAt'] = moment().format();
-            await activityLogCollection.Insert(logs, dbSession);
+            payload["answer"]=answer?.data
+            console.log(answer.data)
+            await questionAnswerCollection.Insert(payload, dbSession);
             code = 200;
             response.message = locals["genericErrMsg"]["200"];
-            response.data = customerResult;
+            response.data = answer?.data?.choices;
         }, transactionOptions);
         return res.response(response).code(code);
     } catch (e) {
@@ -76,7 +67,7 @@ const handler = async (req, res) => {
 const response = {
     status: {
         409: Joi.object({ message: Joi.any().default(locals["genericErrMsg"]["409"]) }),
-        200: Joi.object({ message: Joi.any().default(locals["genericErrMsg"]["200"]), data: Joi.object() }),
+        200: Joi.object({ message: Joi.any().default(locals["genericErrMsg"]["200"]), data: Joi.any() }),
         500: Joi.object({ message: Joi.any().default(locals["genericErrMsg"]["500"]) }),
     }
 }

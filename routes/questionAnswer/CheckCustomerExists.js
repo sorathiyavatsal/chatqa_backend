@@ -1,4 +1,4 @@
-const customerCollection = require("../../models/translation")
+const customerCollection = require("../../models/questionAnswer")
 const IsExists = async (email) => {
     let duplicatCustomer = await customerCollection.Aggregate([
         {

@@ -6,12 +6,12 @@ const GetAPI = require('./Get')
 module.exports = [
     {
         method: 'post',
-        path: '/customer',
+        path: '/question',
         handler: PostAPI.handler,
         config: {
             cors: true,
             description: locals["sampleCard"].Post.ApiDescription,
-            tags: ['api', 'customer'],
+            tags: ['api', 'question'],
             auth: {
                 strategies: ['superadmin','admin','user']
             },
@@ -27,12 +27,12 @@ module.exports = [
     },
     {
         method: 'get',
-        path: '/customer',
+        path: '/question',
         handler: GetAPI.handler,
         config: {
             cors: true,
             description: locals["sampleCard"].Get.ApiDescription,
-            tags: ['api', 'customer'],
+            tags: ['api', 'question'],
             auth: {
                 strategies: ['superadmin', 'admin','user']
             },
@@ -48,12 +48,12 @@ module.exports = [
     },
     {
         method: 'patch',
-        path: '/customer',
+        path: '/question',
         handler: PatchAPI.handler,
         config: {
             cors : true,
             description: locals["sampleCard"].Post.ApiDescription,
-            tags: ['api', 'customer'],
+            tags: ['api', 'question'],
             auth: {
                 strategies: ['superadmin','admin','user']
             },

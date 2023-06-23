@@ -4,7 +4,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const customerCollection = require("../../models/translation")
+const customerCollection = require("../../models/questionAnswer")
 const GetPayload = require('../../library/helper/GetPayload');
 /**
  * @description get all or specifice category details
