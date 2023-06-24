@@ -56,7 +56,7 @@ const handler = async (req, res) => {
                 return;
             }
             payload = await PostPatchPayload.ObjectPayload(req, 'post');
-            payload["endDate"]=payload.endDate?payload.endDate:moment().add(payload.day+1, 'days').format('DD/MM/YYYY');
+            payload["endDate"]=payload.endDate?payload.endDate:moment().add(payload.day+1, 'days').format('YYYY-MM-DD');
             const userPlanResult = await userPlanCollection.Insert(payload, dbSession);
             let logs = {};
             logs['description'] = `User Plan ${AuthUser?.metaData?.name} is added`;

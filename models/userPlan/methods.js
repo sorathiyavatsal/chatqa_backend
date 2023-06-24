@@ -42,6 +42,11 @@ const Update = async (condition, data,session) => {
     const db = await mongo.get();
     return await db.collection(tablename).update(condition, { $set: data },{ session })
 }
+const CustomUpdate =async (condition, data,session) => {
+    const db = await mongo.get();
+    return await db.collection(tablename).update(condition,  data,{session} )
+}
+
 
 const Aggregate = async (condition) => {
     const db = await mongo.get();
@@ -55,5 +60,6 @@ module.exports = {
     SelectById,
     UpdateById,
     Update,
-    Aggregate
+    Aggregate,
+    CustomUpdate
 }
