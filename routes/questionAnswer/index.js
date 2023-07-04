@@ -3,6 +3,7 @@ const locals = require('../../locales')
 const PostAPI = require('./Post')
 const PatchAPI = require('./Patch')
 const GetAPI = require('./Get')
+
 module.exports = [
     {
         method: 'post',
