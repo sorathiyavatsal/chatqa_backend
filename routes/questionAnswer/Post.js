@@ -6,6 +6,7 @@ const locals = require('../../locales');
 const questionAnswerCollection = require("../../models/questionAnswer")
 const duplicatCustomer = require('./CheckCustomerExists')
 const userPlanCollection = require("../../models/userPlan")
+const usersCollection = require("../../models/users")
 const { ObjectId } = require('mongodb');
 const OpenAI = require('../../config/components/OpenAI')
 const moment = require('moment');
@@ -43,8 +44,10 @@ const handler = async (req, res) => {
         await dbSession.withTransaction(async () => {
             let payload = req.payload
             const AuthUser = await GetRequestedUser.User(req.headers.authorization)
-            const userPlan = await userPlanCollection.SelectOne({userId:ObjectId(AuthUser?.userId),status:true,isActive:true})
-            if(!userPlan){
+            const userId =ObjectId(AuthUser?.userId)
+            const userPlan = await userPlanCollection.SelectOne({userId:userId,status:true,isActive:true})
+            const user = await usersCollection.SelectOne({_id:userId,isSubscribe:false})
+            if(!userPlan && !user){
                 code = 409;
                 response.message = "Unfortunately, your subscription plan is not active. Please upgrade to access this feature";
                 return;
@@ -52,23 +55,32 @@ const handler = async (req, res) => {
             const startDate = moment().format('YYYY-MM-DD');
             const endDate = moment(userPlan.endDate);
             const days=endDate.diff(startDate, 'days');
-            if(userPlan.totalPoints<=userPlan.points){
+            if(userPlan.totalPoints<=userPlan.points && !user){
                 await userPlanCollection.Update({_id:userPlan._id},{isActive:false});
                 code = 409;
                 response.message = "Your API count has reached the maximum limit please upgrade your plan";
                 return;
             }
-            else if(days<=0){
+            else if(days<=0 && !user){
                 await userPlanCollection.Update({_id:userPlan._id},{isActive:false});
                 code = 409;
                 response.message = "Your subscription plan is expired. Please upgrade to access this feature"
                 return;
 
             }
-            await userPlanCollection.CustomUpdate({
-                _id: userPlan._id
-            },
-                { $inc: { "points": 1 } });
+            else if(user?.points>=0)
+            {
+                code = 409;
+                response.message = "Your trial API count has reached the maximum limit please upgrade your plan"
+                return;
+            }
+            else if(user?.points<0){
+                await usersCollection.CustomUpdate({
+                    _id: userId
+                },
+                    { $inc: { "points": 1*-1 } });
+            }
+            
             const answer = await OpenAI.createCompletion(payload.data);
             payload = await PostPatchPayload.ObjectPayload(req, 'post');
             payload["answer"]=answer?.data

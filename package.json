@@ -41,6 +41,7 @@
     "rand-token": "^1.0.1",
     "request-promise": "^4.2.6",
     "semver": "^7.3.5",
+    "stripe": "^12.11.0",
     "twilio": "^3.75.0",
     "winston": "^3.3.3",
     "xmldom": "^0.6.0"
