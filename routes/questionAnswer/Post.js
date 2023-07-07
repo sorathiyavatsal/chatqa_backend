@@ -53,9 +53,9 @@ const handler = async (req, res) => {
                 return;
             }
             const startDate = moment().format('YYYY-MM-DD');
-            const endDate = moment(userPlan.endDate);
+            const endDate = moment(userPlan?.endDate);
             const days=endDate.diff(startDate, 'days');
-            if(userPlan.totalPoints<=userPlan.points && !user){
+            if(userPlan?.totalPoints<=userPlan?.points && !user){
                 await userPlanCollection.Update({_id:userPlan._id},{isActive:false});
                 code = 409;
                 response.message = "Your API count has reached the maximum limit please upgrade your plan";
@@ -68,17 +68,23 @@ const handler = async (req, res) => {
                 return;
 
             }
-            else if(user?.points>=0)
+            else if(user?.points<=0 && !userPlan)
             {
                 code = 409;
                 response.message = "Your trial API count has reached the maximum limit please upgrade your plan"
                 return;
             }
-            else if(user?.points<0){
+            else if(user?.points>0 && !userPlan){
                 await usersCollection.CustomUpdate({
                     _id: userId
                 },
                     { $inc: { "points": 1*-1 } });
+            }
+            else if(userPlan?.totalPoints>userPlan?.points){
+                await userPlanCollection.CustomUpdate({
+                    _id: userPlan._id
+                },
+                    { $inc: { "points": 1 } });
             }
             
             const answer = await OpenAI.createCompletion(payload.data);
@@ -88,7 +94,10 @@ const handler = async (req, res) => {
             await questionAnswerCollection.Insert(payload, dbSession);
             code = 200;
             response.message = locals["genericErrMsg"]["200"];
-            response.data = answer?.data?.choices;
+            response.data = {
+               answer: answer?.data?.choices,
+               points:userPlan?.points?(userPlan?.points+1)-userPlan?.totalPoints:(user?.points)-1
+            }
         }, transactionOptions);
         return res.response(response).code(code);
     } catch (e) {
