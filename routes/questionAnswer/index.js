@@ -14,7 +14,7 @@ module.exports = [
             description: locals["sampleCard"].Post.ApiDescription,
             tags: ['api', 'question'],
             auth: {
-                strategies: ['superadmin','admin','user']
+                strategies: ['superadmin', 'admin', 'user']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -35,7 +35,7 @@ module.exports = [
             description: locals["sampleCard"].Get.ApiDescription,
             tags: ['api', 'question'],
             auth: {
-                strategies: ['superadmin', 'admin','user']
+                strategies: ['superadmin', 'admin', 'user']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -52,16 +52,16 @@ module.exports = [
         path: '/question',
         handler: PatchAPI.handler,
         config: {
-            cors : true,
+            cors: true,
             description: locals["sampleCard"].Post.ApiDescription,
             tags: ['api', 'question'],
             auth: {
-                strategies: ['superadmin','admin','user']
+                strategies: ['superadmin', 'admin', 'user']
             },
             validate: {
                 headers: headerValidator.headerAuth,
                 payload: PatchAPI.validator,
-                query:PatchAPI.queryvalidator,
+                query: PatchAPI.queryvalidator,
                 failAction: (req, reply, source, error) => {
                     headerValidator.faildAction(req, reply, source, error)
                 }
