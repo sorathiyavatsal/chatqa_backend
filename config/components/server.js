@@ -3,7 +3,6 @@
 const Joi = require('joi')
 
 const envVarsSchema = Joi.object({ 
-    SERVER_HOST: Joi.string().required(),
     SERVER_PORT: Joi.number().required(),
     AUTH_KEY: Joi.string().required(),
     BASIC_AUTH: Joi.string().required(),
@@ -20,7 +19,6 @@ if (error) {
 
 const config = {
     server: {
-        host: envVars.SERVER_HOST,
         port: envVars.SERVER_PORT,
         enviroment:envVars.SERVER_ENVIRONMENT
     },
