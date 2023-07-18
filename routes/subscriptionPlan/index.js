@@ -34,7 +34,7 @@ module.exports = [
             description: locals["sampleCard"].Get.ApiDescription,
             tags: ['api', 'subscriptionPlan'],
             auth: {
-                strategies: ['superadmin', 'admin','user']
+                strategies: ['superadmin', 'admin','user','basic',]
             },
             validate: {
                 headers: headerValidator.headerAuth,

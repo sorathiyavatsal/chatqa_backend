@@ -57,7 +57,7 @@ module.exports = [
         config: {
             cors : true,
             description: locals["users"].Post.ApiDescription,
-            tags: ['api', 'users'],
+            tags: ['api', 'user'],
             auth: {
                 strategies: ['basic','user', 'admin']
             },

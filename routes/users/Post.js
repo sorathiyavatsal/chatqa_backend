@@ -32,7 +32,7 @@ const validator = Joi.object({
     password: Joi.string().required().description(locals['users'].Post.fieldsDescription.password),
     email: Joi.string().required().description(locals['users'].Post.fieldsDescription.email),
     url: Joi.string().description(locals['signIn'].Post.fieldsDescription.email),
-    points:Joi.number().default(0).min(0).description(locals['users'].Post.fieldsDescription.isActive),
+    points:Joi.number().default(10).description(locals['users'].Post.fieldsDescription.isActive),
     isSubscribe:Joi.boolean().default(false).description(locals['users'].Post.fieldsDescription.isActive),
     active: Joi.boolean().default(true).description(locals['users'].Post.fieldsDescription.type),
     role: Joi.string().default('user').description(locals['users'].Post.fieldsDescription.role).valid('superadmin','admin', 'user')

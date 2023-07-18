@@ -35,14 +35,31 @@ const ObjectPayload = async (Payload, type, sortBy = '_id', DESC = true) => {
           Payload["_id"] = ObjectId(Payload["upId"]);
           delete Payload["upId"];
         }
+        lookupcondition.push({
+          $lookup: {
+            from: "subscriptionPlan",
+            localField: "planId",
+            foreignField: "_id",
+            pipeline: [
+              {
+                $project: {
+                  name: 1,
+                  //status: 1,
+                },
+              },
+            ],
+            as: "userPlan",
+          }
+        })
         break;
     }
+    condition.push(...lookupcondition);
     for (const key in Payload) {
       if (Payload[key] === null) {
         delete Payload[key];
         continue;
       }
-      if (key.toLocaleLowerCase() !== "id" && key.toLocaleLowerCase().includes("id")) {
+      if (["id", "transactionId"].indexOf(key) <= -1 && key.toLocaleLowerCase().includes("id")) {
         Payload[key] = ObjectId(Payload[key]);
       }
       if (key === "name" || key == "email") {

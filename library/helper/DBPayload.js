@@ -9,7 +9,7 @@ const ObjectPayload = async (payload) => {
       }
       else {
         if (
-          (key.toLocaleLowerCase()!=="id" && key.toLocaleLowerCase().includes("id")&&Payload[key]!="") || Number.isInteger(parseInt(key))
+          (["id", "transactionId"].indexOf(key) <= -1 && key.toLocaleLowerCase().includes("id")&&Payload[key]!="") || Number.isInteger(parseInt(key))
         ) {
           Payload[key] = ObjectId(Payload[key]);
         }

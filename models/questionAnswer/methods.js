@@ -5,7 +5,7 @@ const ObjectID = require('mongodb').ObjectID
 const Promise = require("bluebird");
 const mongo = Promise.promisifyAll(require('../mongodb'))
 
-const tablename = 'userPlan'
+const tablename = 'questionAnswer'
 
 const Select = async (data, sortBy = {}, porject = {}, skip = 0, limit = 20) => {
     const db = await mongo.get();
@@ -42,11 +42,6 @@ const Update = async (condition, data,session) => {
     const db = await mongo.get();
     return await db.collection(tablename).update(condition, { $set: data },{ session })
 }
-const CustomUpdate =async (condition, data,session) => {
-    const db = await mongo.get();
-    return await db.collection(tablename).update(condition,  data,{session} )
-}
-
 
 const Aggregate = async (condition) => {
     const db = await mongo.get();
@@ -60,6 +55,5 @@ module.exports = {
     SelectById,
     UpdateById,
     Update,
-    Aggregate,
-    CustomUpdate
+    Aggregate
 }

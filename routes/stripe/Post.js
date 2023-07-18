@@ -4,14 +4,8 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const customerCollection = require("../../models/translation")
-const moment = require('moment');
-const { ObjectId } = require('mongodb');
-const activityLogCollection = require('../../models/activitylogs');
-const GetRequestedUser = require('../../library/helper/GetRequestedUser');
-const duplicatCustomer = require('./CheckCustomerExists')
-const PostPatchPayload = require('../../library/helper/PostPatchPayload');
 const clientDB = require("../../models/mongodb")
+const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST)
 /**
  * @description for user signIn
  * @property {string} authorization - authorization
@@ -25,7 +19,8 @@ const clientDB = require("../../models/mongodb")
  */
 
 const validator = Joi.object({
-    
+    amount:Joi.number().required().description(locals['users'].Post.fieldsDescription.name),
+    id:Joi.string().required().description(locals['users'].Post.fieldsDescription.name)
 }).unknown(false);
 
 const handler = async (req, res) => {
@@ -41,26 +36,23 @@ const handler = async (req, res) => {
     const response = {}
     try {
         await dbSession.withTransaction(async () => {
-            const AuthUser = await GetRequestedUser.User(req.headers.authorization);
-            let payload = req.payload
-            if (payload.other?.email!=null && await duplicatCustomer.IsExists(payload.other?.email)) {
-                code = 409;
-                response.message = "This email Is already Exists";
-                return;
+            let { amount, id } = req.payload
+            try {
+                const payment = await stripe.paymentIntents.create({
+                    amount,
+                    currency: "INR",
+                    description: "abc compony ",
+                    payment_method: id,
+                    confirm: true
+                })
+                code = 200
+                response.message = "payment successfull "
+                response.data = { details: payment }
+            } catch (error) {
+                code = 500
+                response.message = "payment failed "
+                response.data = { details: error }
             }
-            payload = await PostPatchPayload.ObjectPayload(req, 'post');
-            const customerResult = await customerCollection.Insert(payload, dbSession);
-            let logs = {};
-            logs['description'] = `Customer ${payload.other?.email} is added`;
-            logs['type'] = "CUSTOMER"
-            logs['status'] = true;
-            logs['itemId'] = ObjectId("" + customerResult.insertedIds[0]);
-            logs['createdBy'] = AuthUser?.userId ? ObjectId(AuthUser.userId) : "",
-                logs['createAt'] = moment().format();
-            await activityLogCollection.Insert(logs, dbSession);
-            code = 200;
-            response.message = locals["genericErrMsg"]["200"];
-            response.data = customerResult;
         }, transactionOptions);
         return res.response(response).code(code);
     } catch (e) {

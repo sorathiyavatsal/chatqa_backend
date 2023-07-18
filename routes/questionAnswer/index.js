@@ -3,17 +3,18 @@ const locals = require('../../locales')
 const PostAPI = require('./Post')
 const PatchAPI = require('./Patch')
 const GetAPI = require('./Get')
+
 module.exports = [
     {
         method: 'post',
-        path: '/customer',
+        path: '/question',
         handler: PostAPI.handler,
         config: {
             cors: true,
             description: locals["sampleCard"].Post.ApiDescription,
-            tags: ['api', 'customer'],
+            tags: ['api', 'question'],
             auth: {
-                strategies: ['superadmin','admin','user']
+                strategies: ['superadmin', 'admin', 'user']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -27,14 +28,14 @@ module.exports = [
     },
     {
         method: 'get',
-        path: '/customer',
+        path: '/question',
         handler: GetAPI.handler,
         config: {
             cors: true,
             description: locals["sampleCard"].Get.ApiDescription,
-            tags: ['api', 'customer'],
+            tags: ['api', 'question'],
             auth: {
-                strategies: ['superadmin', 'admin','user']
+                strategies: ['superadmin', 'admin', 'user']
             },
             validate: {
                 headers: headerValidator.headerAuth,
@@ -48,19 +49,19 @@ module.exports = [
     },
     {
         method: 'patch',
-        path: '/customer',
+        path: '/question',
         handler: PatchAPI.handler,
         config: {
-            cors : true,
+            cors: true,
             description: locals["sampleCard"].Post.ApiDescription,
-            tags: ['api', 'customer'],
+            tags: ['api', 'question'],
             auth: {
-                strategies: ['superadmin','admin','user']
+                strategies: ['superadmin', 'admin', 'user']
             },
             validate: {
                 headers: headerValidator.headerAuth,
                 payload: PatchAPI.validator,
-                query:PatchAPI.queryvalidator,
+                query: PatchAPI.queryvalidator,
                 failAction: (req, reply, source, error) => {
                     headerValidator.faildAction(req, reply, source, error)
                 }

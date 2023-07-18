@@ -17,7 +17,7 @@ const ObjectPayload = async (req, type) => {
       }
       else {
         if (
-          key.toLocaleLowerCase()!=="id" && key.toLocaleLowerCase().includes("id") && Payload[key]!=""
+          ["id", "transactionId"].indexOf(key) <= -1 && key.toLocaleLowerCase().includes("id") && Payload[key]!=""
         ) {
           Payload[key] = ObjectId(Payload[key]);
         }

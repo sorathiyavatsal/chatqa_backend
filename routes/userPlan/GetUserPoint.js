@@ -4,8 +4,10 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const customerCollection = require("../../models/translation")
-const GetPayload = require('../../library/helper/GetPayload');
+const userPlanCollection = require("../../models/userPlan");
+const usersCollection = require("../../models/users");
+const { ObjectId } = require('mongodb');
+
 /**
  * @description get all or specifice category details
  * @property {string} authorization - authorization
@@ -20,23 +22,23 @@ const GetPayload = require('../../library/helper/GetPayload');
  */
 
 const validator = Joi.object({
-    cId: Joi.string().description(locals['sampleCard'].Get.fieldsDescription.scId),
-    page: Joi.number().description(locals['sampleCard'].Get.fieldsDescription.page),
-    limit: Joi.number().description(locals['sampleCard'].Get.fieldsDescription.limit),
-    status: Joi.boolean().default(true).description(locals['sampleCard'].Get.fieldsDescription.status)
-}).unknown(true);
+    userId: Joi.string().description(locals['users'].Post.fieldsDescription.name),
+}).unknown(false);
 
 const handler = async (req, res) => {
     try {
-        const customerResult = await customerCollection.Aggregate(await GetPayload.ObjectPayload(req.query,'customer'))
-        if (!customerResult || !customerResult[0]?.customer) {
+        const AuthUser = await GetRequestedUser.User(req.headers.authorization)
+        const userId = req.query?.userId?ObjectId(req.query?.userId): ObjectId(AuthUser?.userId)
+        const userPlan = await userPlanCollection.SelectOne({ userId: userId, status: true, isActive: true })
+        const user = await usersCollection.SelectOne({ _id: userId, isSubscribe: false })
+        if (!user) {
             return res.response({
                 message: locals["genericErrMsg"]["204"]
             }).code(204);
         }
         return res.response({
-            message: locals["genericErrMsg"]["200"], 
-           data: customerResult[0].customer
+            message: locals["genericErrMsg"]["200"],
+            data: userPlan?.points?userPlan?.totalPoints-userPlan?.points:user?.points
         }).code(200);
     } catch (e) {
         console.log(e)

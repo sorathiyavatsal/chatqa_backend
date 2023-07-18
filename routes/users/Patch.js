@@ -53,9 +53,8 @@ const handler = async (req, res) => {
             const getUser = await usersCollection.SelectOne({
                 _id: ObjectId(req.query.userId)
             });
-
             let body = {}
-            if (payload.email!="" && getUser.email != payload.email) {
+            if (payload.email!=null && getUser.email != payload.email) {
                 if (await duplicatEmail.IsExists(payload.email)) {
                     code = 409;
                     response.message = locals['users'].Post.error.EmailExists;

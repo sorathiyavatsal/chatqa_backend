@@ -31,7 +31,7 @@ const queryvalidator = Joi.object({
 const validator = Joi.object({
     userId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
     planId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
-    translationId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
+    transactionId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
     totalPoints: Joi.number().description(locals['users'].Post.fieldsDescription.name),
     points:Joi.number().description(locals['users'].Post.fieldsDescription.isActive),
     day: Joi.number().description(locals['signIn'].Post.fieldsDescription.email),

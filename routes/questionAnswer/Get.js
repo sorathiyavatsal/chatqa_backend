@@ -4,7 +4,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi)
 const logger = require('winston');
 const locals = require('../../locales');
-const userPlanCollection = require("../../models/userPlan")
+const customerCollection = require("../../models/questionAnswer")
 const GetPayload = require('../../library/helper/GetPayload');
 /**
  * @description get all or specifice category details
@@ -20,31 +20,23 @@ const GetPayload = require('../../library/helper/GetPayload');
  */
 
 const validator = Joi.object({
-    upId: Joi.string().description(locals['sampleCard'].Get.fieldsDescription.scId),
+    cId: Joi.string().description(locals['sampleCard'].Get.fieldsDescription.scId),
     page: Joi.number().description(locals['sampleCard'].Get.fieldsDescription.page),
     limit: Joi.number().description(locals['sampleCard'].Get.fieldsDescription.limit),
-    userId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
-    planId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
-    transactionId:Joi.string().description(locals['users'].Post.fieldsDescription.name),
-    totalPoints: Joi.number().description(locals['users'].Post.fieldsDescription.name),
-    points:Joi.number().description(locals['users'].Post.fieldsDescription.isActive),
-    day: Joi.number().description(locals['signIn'].Post.fieldsDescription.email),
-    endDate:Joi.string().description(locals['users'].Post.fieldsDescription.type),
-    status: Joi.boolean().default(true).description(locals['sampleCard'].Post.fieldsDescription.status),
-    isActive: Joi.boolean().description(locals['sampleCard'].Post.fieldsDescription.status)
-}).unknown(false);
+    status: Joi.boolean().default(true).description(locals['sampleCard'].Get.fieldsDescription.status)
+}).unknown(true);
 
 const handler = async (req, res) => {
     try {
-        const userPlanResult = await userPlanCollection.Aggregate(await GetPayload.ObjectPayload(req.query,'userPlan'))
-        if (!userPlanResult || !userPlanResult[0]?.userPlan) {
+        const customerResult = await customerCollection.Aggregate(await GetPayload.ObjectPayload(req.query,'customer'))
+        if (!customerResult || !customerResult[0]?.customer) {
             return res.response({
                 message: locals["genericErrMsg"]["204"]
             }).code(204);
         }
         return res.response({
             message: locals["genericErrMsg"]["200"], 
-           data: userPlanResult[0].userPlan
+           data: customerResult[0].customer
         }).code(200);
     } catch (e) {
         console.log(e)

@@ -9,7 +9,7 @@ const db = require('./models/mongodb');
 
 const Server = Hapi.Server({
     host: config.server.host,
-    port: config.server.port || 3030
+    port: config.server.port
 });
 Server.realm.modifiers.route.prefix = "/v1";
 

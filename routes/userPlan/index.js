@@ -3,6 +3,7 @@ const locals = require('../../locales')
 const PostAPI = require('./Post')
 const PatchAPI = require('./Patch')
 const GetAPI = require('./Get')
+const GetUserPoint= require('./GetUserPoint')
 module.exports = [
     {
         method: 'post',
@@ -44,6 +45,27 @@ module.exports = [
                 }
             },
             //response: GetAPI.response
+        }
+    },
+    {
+        method: 'get',
+        path: '/userPoint',
+        handler: GetUserPoint.handler,
+        config: {
+            cors: true,
+            description: locals["sampleCard"].Get.ApiDescription,
+            tags: ['api', 'userPoint'],
+            auth: {
+                strategies: ['superadmin', 'admin','user']
+            },
+            validate: {
+                headers: headerValidator.headerAuth,
+                query: GetUserPoint.validator,
+                failAction: (req, reply, source, error) => {
+                    headerValidator.faildAction(req, reply, source, error)
+                }
+            },
+            response: GetUserPoint.response
         }
     },
     {
